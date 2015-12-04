@@ -11,15 +11,14 @@
     (return-from gen-count-table count-table))
   (let ((buffer (read-chunk file 4096)))
     (if (zerop buffer) (gen-count-table nil count-table)
-	(mapcar #'(lambda (count)
-		    (if (gethash (car count) count-table) 
-			(setf 
-			 (gethash (car count) count-table) 
-			 (+ (gethash (car count) count-table) (cdr count)))
-			(setf (gethash (car count) count-table)
-			      (cdr count))))
-		(count-chunk (parse-chunk buffer)))))
-  (gen-count-table file count-table))
+	(loop for count in (count-chunk (parse-chunk buffer))
+	   do (if (gethash (car count) count-table) 
+		  (setf 
+		   (gethash (car count) count-table) 
+		   (+ (gethash (car count) count-table) (cdr count)))
+		  (setf (gethash (car count) count-table)
+			(cdr count)))))
+    (gen-count-table file count-table)))
 			
 
 (defun read-chunk (file size)
@@ -37,7 +36,7 @@
 			   chunk)))
 
 (defun count-chunk (parsed-chunk)
-  (mapcar #'(lambda (word) (list word (count word parsed-chunk)))
+  (mapcar #'(lambda (word) (list (coerce word 'string) (count word parsed-chunk)))
 	  (remove-duplicates parsed-chunk)))
 
 ;; REMOVE CHARACTERS FROM CHUNK BEFORE PROCESSING:
@@ -66,8 +65,7 @@
 	   (remove "" 
 		   (apply #'concatenate 
 			  'list split-sequences) 
-		   :key #'string 
-		   :test #'string=))))
+		   :test #'equalp))))
        
 
 (defun cut-buffer (buffer file)
@@ -90,8 +88,3 @@
           ))
       temp-buffer)
     ))
-        
-
-(gen-count-table 
- (open "/home/user/projects/stroop/test.txt") 
- (make-hash-table :test 'equal))
