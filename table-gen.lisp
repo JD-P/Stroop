@@ -7,24 +7,27 @@
     (print buffer)))
 
 (defun gen-count-table (file count-table)
-  (when (not file)
-    (return-from gen-count-table count-table))
-  (let ((buffer (read-chunk file 4096)))
-    (if (zerop buffer) (gen-count-table nil count-table)
-	(loop for count in (count-chunk (parse-chunk buffer))
-	   do (if (gethash (car count) count-table) 
-		  (setf 
-		   (gethash (car count) count-table) 
-		   (+ (gethash (car count) count-table) (cdr count)))
-		  (setf (gethash (car count) count-table)
-			(cdr count)))))
-    (gen-count-table file count-table)))
+  (let ((chunk-buffer (make-array 4096)))
+    (loop until (zerop (read-sequence chunk-buffer file))
+	 do (parse-count-transfer count-table chunk-buffer)
+       finally (return count-table))))
+
+(defun parse-count-transfer (count-table chunk)
+  (let ((counted-chunk (count-chunk (parse-chunk chunk))))
+    (loop for count in counted-chunk
+	 do (if (gethash (car count) count-table) 
+		(setf 
+		 (gethash (car count) count-table) 
+		 (+ (gethash (car count) count-table) (first (cdr count))))
+		(setf (gethash (car count) count-table)
+		      (first (cdr count))))))
+  count-table)
 			
 
 (defun read-chunk (file size)
   (let
       ((chunk-buffer (make-array size)))
-    (if (zerop (read-sequence chunk-buffer file)) 0
+    (if (zerop (read-sequence chunk-buffer file)) nil
 	chunk-buffer)))
     
 
