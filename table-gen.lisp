@@ -75,13 +75,12 @@
   (let* (
 	(word-cut (- (position (character " ") 
 			       (reverse buffer)) 
-		     1)
+		     1))
 	(temp-buffer (make-array 
 		      (- (length buffer) 
 			 word-cut)
 		     ))
 	  )
-	 )
     (read-sequence temp-buffer file)
     (concatenate 'vector 
       (subseq buffer 
