@@ -73,9 +73,9 @@
 
 (defun cut-buffer (buffer file)
   (let* (
-	(word-cut (- (position (character " ") 
+	(word-cut (position (character " ") 
 			       (reverse buffer)) 
-		     1))
+		     )
 	(temp-buffer (make-array 
 		      (- (length buffer) 
 			 word-cut)
