@@ -8,7 +8,7 @@
 
 (defun gen-count-table (file count-table)
   (let ((chunk-buffer (make-array 4096)))
-    (loop until (zerop (read-sequence chunk-buffer file))
+    (loop until (not (setq chunk-buffer (read-chunk chunk-buffer file)))
 	 do (parse-count-transfer count-table chunk-buffer)
        finally (return count-table))))
 
@@ -28,7 +28,15 @@
   (let
       ((chunk-buffer (make-array size)))
     (if (zerop (read-sequence chunk-buffer file)) nil
-	chunk-buffer)))
+	(let ((last-read (elt chunk-buffer 
+			      (- (length chunk-buffer) 1))))
+	  (loop until (or 
+		       (eql last-read #\space)
+		       (not last-read))
+	     do (setq last-read (read-char file nil))
+	     do (setq chunk-buffer
+		      (concatenate 'vector chunk-buffer (vector last-read)))
+	     finally (return chunk-buffer))))))
     
 
 (defun parse-chunk (chunk)
