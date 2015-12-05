@@ -1,14 +1,16 @@
 (ql:quickload 'split-sequence)
 
-(defun gen-frequency-table (filepath) 
-  (let ((file (open filepath))
-	(buffer (make-array 4096)))
-    (read-sequence buffer file)
-    (print buffer)))
+(defun gen-frequency-table (file)
+  (let* ((count-table (gen-count-table file (make-hash-table :test 'equal)))
+	 (total (apply #'+ (loop for value being the hash-values of count-table collecting value)))
+	 (frequency-table (make-hash-table :test 'equal)))
+    (maphash #'(lambda (key value) (setf (gethash key frequency-table) (/ value total)))
+	     count-table)
+    (return-from gen-frequency-table frequency-table)))
 
 (defun gen-count-table (file count-table)
   (let ((chunk-buffer (make-array 4096)))
-    (loop until (not (setq chunk-buffer (read-chunk chunk-buffer file)))
+    (loop until (not (setq chunk-buffer (read-chunk file 4096)))
 	 do (parse-count-transfer count-table chunk-buffer)
        finally (return count-table))))
 
