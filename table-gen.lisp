@@ -17,11 +17,11 @@
 (defun parse-count-transfer (count-table chunk)
   (let ((counted-chunk (count-chunk (parse-chunk chunk))))
     (loop for count in counted-chunk
-	 do (if (gethash (car count) count-table) 
+	 do (if (gethash (string-downcase (car count)) count-table) 
 		(setf 
-		 (gethash (car count) count-table) 
-		 (+ (gethash (car count) count-table) (first (cdr count))))
-		(setf (gethash (car count) count-table)
+		 (gethash (string-downcase (car count)) count-table) 
+		 (+ (gethash (string-downcase (car count)) count-table) (first (cdr count))))
+		(setf (gethash (string-downcase (car count)) count-table)
 		      (first (cdr count))))))
   count-table)
 			
