@@ -1,3 +1,5 @@
+# https://archive.org/details/HackerNewsStoriesAndCommentsDump
+
 import ijson
 import re
 import argparse
