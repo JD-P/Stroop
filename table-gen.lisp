@@ -30,8 +30,10 @@
   (let
       ((chunk-buffer (make-array size)))
     (if (zerop (read-sequence chunk-buffer file)) nil
-	(let ((last-read (elt chunk-buffer 
-			      (- (length chunk-buffer) 1))))
+	(let ((last-read (if (not (peek-char nil file nil))
+			     nil
+			     (elt chunk-buffer 
+				  (- (length chunk-buffer) 1)))))
 	  (loop until (or 
 		       (eql last-read #\space)
 		       (not last-read))
@@ -67,18 +69,20 @@
   (if (equal (type-of sequences) 'CONS) Nil (setq sequences (list sequences)))
   (let 
       ((delimiter (car split-list)))
-    (if delimiter
-	(setq split-sequences 
-	      (mapcar 
-	       #'(lambda (sequence) 
-		   (split-sequence:split-sequence delimiter sequence))
-	       sequences))
-	(return-from split-many sequences))
-    (apply #'split-many (cdr split-list) 
-	   (remove "" 
-		   (apply #'concatenate 
-			  'list split-sequences) 
-		   :test #'equalp))))
+    (if (not delimiter)
+	sequences
+	(progn
+	  (setq split-sequences 
+		(mapcar 
+		 #'(lambda (sequence) 
+		     (split-sequence:split-sequence delimiter sequence))
+		 sequences))
+	  (apply #'split-many (cdr split-list) 
+		 (remove "" 
+			 (apply #'concatenate 
+				'list split-sequences) 
+			 :test #'equalp))))))
+
        
 
 (defun cut-buffer (buffer file)
