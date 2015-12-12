@@ -4,8 +4,8 @@
   (let* ((count-table (gen-count-table file (make-hash-table :test 'equal)))
 	 (total (apply #'+ (loop for value being the hash-values of count-table collecting value)))
 	 (frequency-table (make-hash-table :test 'equal)))
-    (maphash #'(lambda (key value) (setf (gethash key frequency-table) (/ value total)))
-	     count-table)
+    (loop for key being the hash-keys in count-table using (hash-value value) 
+       do (setf (gethash key frequency-table) (/ value total)))
     (return-from gen-frequency-table frequency-table)))
 
 (defun gen-count-table (file count-table)
@@ -82,25 +82,3 @@
 			 (apply #'concatenate 
 				'list split-sequences) 
 			 :test #'equalp))))))
-
-       
-
-(defun cut-buffer (buffer file)
-  (let* (
-	(word-cut (position (character " ") 
-			       (reverse buffer)) 
-		     )
-	(temp-buffer (make-array 
-		      (- (length buffer) 
-			 word-cut)
-		     ))
-	  )
-    (read-sequence temp-buffer file)
-    (concatenate 'vector 
-      (subseq buffer 
-        (-
-          (length buffer)
-	  word-cut
-          ))
-      temp-buffer)
-    ))
