@@ -4,6 +4,7 @@ import ijson
 import re
 import argparse
 import time
+import sys
 
 def html_strip(text):
     text = text.replace("&#x27;", "'")
@@ -22,6 +23,9 @@ arguments = arg_parser.parse_args()
 comments_file = open(arguments.filepath)
 parser = ijson.parse(comments_file)
 
+comment_count = 0
 for prefix, event, value in parser:
     if prefix.endswith("comment_text.value") and value is not None:
         print(html_strip(value))
+        comment_count += 1
+        sys.stderr.write(str(comment_count) + "\n")
