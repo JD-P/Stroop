@@ -1,4 +1,6 @@
 # https://archive.org/details/HackerNewsStoriesAndCommentsDump
+# run: python3 HNCommentsLoader.py /path/to/your/copy/of/dump | sbcl --dynamic-space-size 1500 --control-stack-size 1000 --load make-frequency-table.lisp > dictionary.txt
+# I tried for a very long time to fix the Lisp code so it doesn't need so much memory, but I can't figure it out so I'm moving on.
 
 import ijson
 import re
