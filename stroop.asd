@@ -35,6 +35,6 @@
                  (:file "view" :depends-on ("config"))
                  (:file "db" :depends-on ("config"))
                  (:file "config")
-		 (:file "parse-print")))
+		 (:file "parse-print"))))
   :description ""
   :in-order-to ((test-op (load-op stroop-test))))
