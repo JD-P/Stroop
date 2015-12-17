@@ -50,7 +50,7 @@
 (defun stroop-printer (element)
   (if (equal (pt-name element) :PCDATA)
       (progn 
-	(print (pt-attrs element))
+	(format t "~a" (pt-attrs element))
 	T)
       NIL))
   
