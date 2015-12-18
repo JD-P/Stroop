@@ -31,10 +31,11 @@
   :components ((:module "src"
                 :components
                 ((:file "main" :depends-on ("config" "view" "db"))
-                 (:file "web" :depends-on ("view" "parse-print"))
+                 (:file "web" :depends-on ("view" "parse-print" "colorize"))
                  (:file "view" :depends-on ("config"))
                  (:file "db" :depends-on ("config"))
                  (:file "config")
-		 (:file "parse-print"))))
+		 (:file "parse-print")
+		 (:file "colorize"))))
   :description ""
   :in-order-to ((test-op (load-op stroop-test))))
