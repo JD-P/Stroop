@@ -5,6 +5,7 @@
         :stroop.config
         :stroop.view
         :stroop.db
+	:stroop.colorize
         :datafly
 	:drakma
         :sxql
@@ -39,30 +40,4 @@
   (merge-pathnames #P"_errors/404.html"
                    *template-directory*))
 
-;; Data Loads
-
-(defun parse-line (raw-entry)
-  (if (not raw-entry) NIL
-      (let* (
-	     (splitline (split-sequence #\space raw-entry))
-	     (key (string 
-		   (subseq (first splitline) 1)))
-	     (value (read-from-string 
-		     (subseq (second splitline) 0 
-			     (- (length 
-				 (second 
-				  splitline))
-				1)))))
-	(list key value))))
-
-(setq dictionary (let (
-		       (dictionary-file (open "dictionary.txt"))
-		       (dictionary (make-hash-table :test 'equal))
-		       )
-		   (loop until (not (if (setq entry 
-					      (parse-line 
-					       (read-line dictionary-file nil))) 
-					T NIL))
-		      do (setf (gethash (first entry) dictionary) (second entry))
-		      finally (return dictionary))))
 
